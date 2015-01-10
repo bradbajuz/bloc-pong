@@ -113,6 +113,7 @@ Ball.prototype.update = function(paddle1, paddle2) {
 var player = new Player();
 var computer = new Computer();
 var ball = new Ball(200, 300);
+var score = new Score();
 
 var render = function() {
   context.fillStyle = "#FF00FF";
@@ -120,6 +121,7 @@ var render = function() {
   player.render();
   computer.render();
   ball.render();
+  score.render();
 };
 
 function Paddle(x, y, width, height) {
@@ -166,6 +168,15 @@ Ball.prototype.render = function() {
   context.fillStyle = "#000000";
   context.fill();
 };
+
+function Score() {
+}
+
+Score.prototype.render = function() {
+  context.font = "23px Arial";
+  context.fillText("SCORE", 10, 30);
+  context.fillStyle = "#000099";
+}
 
 var keysDown = {};
 
