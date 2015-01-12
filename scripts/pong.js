@@ -24,7 +24,9 @@ var step = function() {
 var update = function() {
   player.update();
   computer.update(ball);
-  ball.update(player.paddle, computer.paddle);
+  ball.update(player.paddle, computer.paddle, scoreComputer, scorePlayer);
+  scoreComputer.update();
+  scorePlayer.update();
 };
 
 Computer.prototype.update = function(ball) {
@@ -70,7 +72,7 @@ Paddle.prototype.move = function(x, y) {
   }
 }
 
-Ball.prototype.update = function(paddle1, paddle2) {
+Ball.prototype.update = function(paddle1, paddle2, score) {
   this.x += this.x_speed;
   this.y += this.y_speed;
   var top_x = this.x - 5;
@@ -89,6 +91,13 @@ Ball.prototype.update = function(paddle1, paddle2) {
   if(this.y < 0 || this.y > 600) { // a point was scored
     this.x_speed = 0;
     this.y_speed = 3;
+
+    if(this.y < 0) {
+      scorePlayer.incrementPlayerScore();
+    }
+    if(this.y > 600) {
+      scoreComputer.incrementComputerScore();
+    }
     this.x = 200;
     this.y = 300;
   }
@@ -113,15 +122,17 @@ Ball.prototype.update = function(paddle1, paddle2) {
 var player = new Player();
 var computer = new Computer();
 var ball = new Ball(200, 300);
-var score = new Score();
+var scoreComputer = new ScoreComputer();
+var scorePlayer = new ScorePlayer();
 
 var render = function() {
-  context.fillStyle = "#FF00FF";
+  context.fillStyle = "#99CC00";
   context.fillRect(0, 0, width, height);
   player.render();
   computer.render();
   ball.render();
-  score.render();
+  scoreComputer.render();
+  scorePlayer.render();
 };
 
 function Paddle(x, y, width, height) {
@@ -134,7 +145,6 @@ function Paddle(x, y, width, height) {
 }
 
 Paddle.prototype.render = function() {
-  context.fillStyle = "#0000FF";
   context.fillRect(this.x, this.y, this.width, this.height);
 };
 
@@ -147,10 +157,12 @@ function Computer() {
 }
 
 Player.prototype.render = function() {
+  context.fillStyle = "#0000FF";
   this.paddle.render();
 };
 
 Computer.prototype.render = function() {
+  context.fillStyle = "#CC3300";
   this.paddle.render();
 };
 
@@ -169,13 +181,46 @@ Ball.prototype.render = function() {
   context.fill();
 };
 
-function Score() {
+function ScoreComputer() {
+  this.computerScore = 0;
 }
 
-Score.prototype.render = function() {
+function ScorePlayer() {
+  this.playerScore = 0;
+}
+
+ScoreComputer.prototype.update = function() {
+  if(this.computerScore === 21) {
+    alert("Computer Won!");
+    location.reload();
+  }
+}
+
+ScorePlayer.prototype.update = function() {
+  if(this.playerScore === 21) {
+    alert("You Won!");
+    location.reload();
+  }
+}
+
+ScoreComputer.prototype.incrementComputerScore = function() {
+  this.computerScore++;
+}
+
+ScorePlayer.prototype.incrementPlayerScore = function() {
+  this.playerScore++;
+}
+
+ScoreComputer.prototype.render = function() {
   context.font = "23px Arial";
-  context.fillText("SCORE", 10, 30);
-  context.fillStyle = "#000099";
+  context.fillStyle = "#CC3300";
+  context.fillText(this.computerScore, 10, 30);
+}
+
+ScorePlayer.prototype.render = function() {
+  context.font = "23px Arial";
+  context.fillStyle = "#0000FF";
+  context.fillText(this.playerScore, 10, 585);
 }
 
 var keysDown = {};
